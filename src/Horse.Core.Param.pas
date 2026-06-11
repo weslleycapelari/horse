@@ -88,8 +88,15 @@ begin
 end;
 
 function THorseCoreParam.ContainsKey(const AKey: string): Boolean;
+var
+  LKey: string;
 begin
-  Result := FParams.ContainsKey(AKey);
+  Result := False;
+  for LKey in FParams.Keys do
+  begin
+    if SameText(LKey, AKey) then
+      Exit(True);
+  end;
 end;
 
 function THorseCoreParam.ContainsValue(const AValue: string): Boolean;
@@ -98,13 +105,33 @@ begin
 end;
 
 function THorseCoreParam.TryGetValue(const AKey: string; var AValue: string): Boolean;
+var
+  LKey: string;
 begin
-  Result := FParams.TryGetValue(AKey, AValue);
+  Result := False;
+  for LKey in FParams.Keys do
+  begin
+    if SameText(LKey, AKey) then
+    begin
+      AValue := FParams.Items[LKey];
+      Exit(True);
+    end;
+  end;
 end;
 
 function THorseCoreParam.GetItem(const AKey: string): string;
+var
+  LKey: string;
 begin
-  FParams.TryGetValue(AKey, Result);
+  Result := '';
+  for LKey in FParams.Keys do
+  begin
+    if SameText(LKey, AKey) then
+    begin
+      Result := FParams.Items[LKey];
+      Break;
+    end;
+  end;
 end;
 
 function THorseCoreParam.GetDictionary: THorseList;
