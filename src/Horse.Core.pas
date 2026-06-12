@@ -262,8 +262,6 @@ type
 
     class function GetInstance: THorseCore;
     class property MaxPayloadSize: Int64 read GetMaxPayloadSize write SetMaxPayloadSize;
-
-    class function GetInstance: THorseCore;
     class procedure Reset; static;
 
     class function Version: string;

@@ -17,13 +17,15 @@ Para manter a estabilidade da biblioteca em múltiplos compiladores (Delphi e FP
 
 ## 2. Isolamento de Estado Global com `THorse.Reset`
 
-O core do Horse utiliza um singleton estático global (`FRoutes` em [Horse.Core.pas](file:///C:/Users/weslley.capelari/Documents/Projetos/Github/weslleycapelari/horse/src/Horse.Core.pas)) que mantém a árvore de rotas e os middlewares ativos na memória do processo de testes.
+O core do Horse utiliza um singleton estático global (`FRoutes` em [Horse.Core.pas](../src/Horse.Core.pas)) que mantém a árvore de rotas e os middlewares ativos na memória do processo de testes.
 
-### O Problema:
+### O Problema
+
 Se o Teste A registra a rota `/api/test`, e o Teste B tenta registrar a mesma rota (ou usa um setup similar), o barramento disparará uma exceção física `Duplicate route detected`, quebrando a execução concorrente.
 
-### A Solução:
-Para garantir que o estado de rotas e middlewares globais seja limpo após cada caso de teste, o core do Horse expõe a procedure estática `THorse.Reset`. 
+### A Solução
+
+Para garantir que o estado de rotas e middlewares globais seja limpo após cada caso de teste, o core do Horse expõe a procedure estática `THorse.Reset`.
 
 Cada classe de teste que registre rotas **deve obrigatoriamente** invocar `THorse.Reset` na sua seção de `TearDown`:
 
@@ -45,6 +47,7 @@ O método `THorse.Reset` desaloca a árvore de roteamento e recria a lista de ca
 Ao escrever testes que sobem a escuta física do servidor HTTP, as seguintes diretrizes devem ser aplicadas:
 
 ### 3.1 Execução Assíncrona Não-Bloqueante
+
 A chamada `THorse.Listen` é bloqueante por natureza. Para evitar travar a execução do runner DUnitX, o servidor deve ser iniciado em uma thread de background (thread anônima):
 
 ```delphi
@@ -63,11 +66,15 @@ end;
 ```
 
 ### 3.2 Prevenção do Erro de Conexão Recusada (WinINet 12029)
+
 Após dar o `.Start` na thread do servidor, o cliente HTTP de testes (como o `RESTRequest4D`) não deve disparar a requisição imediatamente. O Windows pode demorar milissegundos para agendar o socket físico e ativar a porta.
+
 * **Padrão:** Sempre adicionar um delay mínimo (`TThread.Sleep(200)`) logo após iniciar a thread anônima do servidor para garantir que a porta física esteja ativa e ouvindo antes do request.
 
 ### 3.3 Uso de Portas TCP Altas e Variadas
+
 Para evitar colisões com portas padrão ou serviços locais zumbis em background:
+
 * **Não** utilize portas comumente usadas (como `80`, `443`, `8080`, `9000`).
 * **Padrão:** Prefira portas altas entre `9010` e `9990` ou na faixa de `20000+` (ex: `9025` ou `28543`).
 

@@ -17,12 +17,14 @@ To maintain library stability across multiple compilers (Delphi and FPC/Lazarus)
 
 ## 2. Global State Isolation with `THorse.Reset`
 
-The Horse core uses a global static singleton (`FRoutes` in [Horse.Core.pas](file:///C:/Users/weslley.capelari/Documents/Projetos/Github/weslleycapelari/horse/src/Horse.Core.pas)) that stores the route tree and active global middlewares in memory throughout the test runner process.
+The Horse core uses a global static singleton (`FRoutes` in [Horse.Core.pas](../src/Horse.Core.pas)) that stores the route tree and active global middlewares in memory throughout the test runner process.
 
-### The Problem:
+### The Problem
+
 If Test A registers `/api/test`, and Test B attempts to register the same route (or uses a similar setup), the core will throw a physical `Duplicate route detected` exception, breaking concurrent test execution.
 
-### The Solution:
+### The Solution
+
 To ensure the route tree and global middleware state is wiped clean after each test case, the Horse core exposes the static method `THorse.Reset`.
 
 Every test class that registers routes **must** invoke `THorse.Reset` inside its `TearDown` section:
@@ -45,6 +47,7 @@ The `THorse.Reset` method deallocates the routing tree and recreates an empty gl
 When writing tests that spin up a physical HTTP listener, the following guidelines apply:
 
 ### 3.1 Non-Blocking Asynchronous Execution
+
 The `THorse.Listen` method is blocking by default. To avoid hanging the DUnitX runner, the server must be spawned on a background thread (anonymous thread):
 
 ```delphi
@@ -63,11 +66,15 @@ end;
 ```
 
 ### 3.2 Connection Refused Prevention (WinINet 12029)
+
 After calling `.Start` on the server thread, the client HTTP library (e.g. `RESTRequest4D`) must not send the request immediately. The OS can take some milliseconds to bind the socket.
+
 * **Standard:** Always inject a minimum delay (`TThread.Sleep(200)`) right after starting the server thread to ensure the socket is active and listening before dispatching requests.
 
 ### 3.3 High and Varied TCP Ports
+
 To avoid collisions with standard ports or background zombie services:
+
 * **Do not** use commonly occupied ports (such as `80`, `443`, `8080`, `9000`).
 * **Standard:** Use high ports in the range `9010` to `9990` or `20000+` (e.g., `9025` or `28543`).
 

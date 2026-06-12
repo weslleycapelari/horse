@@ -98,12 +98,6 @@ begin
     if SameText(LKey, AKey) then
       Exit(True);
   end;
-    if AnsiCompareText(LKey, AKey) = 0 then
-    begin
-      AActualKey := LKey;
-      Exit(True);
-    end;
-  end;
 end;
 
 function THorseCoreParam.ContainsKey(const AKey: string): Boolean;
