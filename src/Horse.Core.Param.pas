@@ -1,4 +1,4 @@
-unit Horse.Core.Param;
+﻿unit Horse.Core.Param;
 
 {$IF DEFINED(FPC)}
   {$MODE DELPHI}{$H+}
@@ -36,6 +36,7 @@ type
     function GetContent: TStrings;
     function NewField(const AKey: string): THorseCoreParamField;
     procedure ClearFields;
+    function FindKey(const AKey: string; out AActualKey: string): Boolean;
   public
     function Required(const AValue: Boolean): THorseCoreParam;
     function Field(const AKey: string): THorseCoreParamField;
@@ -87,9 +88,26 @@ begin
   FRequired := AValue;
 end;
 
-function THorseCoreParam.ContainsKey(const AKey: string): Boolean;
+function THorseCoreParam.FindKey(const AKey: string; out AActualKey: string): Boolean;
+var
+  LKey: string;
 begin
-  Result := FParams.ContainsKey(AKey);
+  Result := False;
+  for LKey in FParams.Keys do
+  begin
+    if AnsiCompareText(LKey, AKey) = 0 then
+    begin
+      AActualKey := LKey;
+      Exit(True);
+    end;
+  end;
+end;
+
+function THorseCoreParam.ContainsKey(const AKey: string): Boolean;
+var
+  LActualKey: string;
+begin
+  Result := FindKey(AKey, LActualKey);
 end;
 
 function THorseCoreParam.ContainsValue(const AValue: string): Boolean;
@@ -98,13 +116,23 @@ begin
 end;
 
 function THorseCoreParam.TryGetValue(const AKey: string; var AValue: string): Boolean;
+var
+  LActualKey: string;
 begin
-  Result := FParams.TryGetValue(AKey, AValue);
+  Result := FindKey(AKey, LActualKey);
+  if Result then
+    AValue := FParams.Items[LActualKey]
+  else
+    AValue := '';
 end;
 
 function THorseCoreParam.GetItem(const AKey: string): string;
+var
+  LActualKey: string;
 begin
-  FParams.TryGetValue(AKey, Result);
+  Result := '';
+  if FindKey(AKey, LActualKey) then
+    Result := FParams.Items[LActualKey];
 end;
 
 function THorseCoreParam.GetDictionary: THorseList;

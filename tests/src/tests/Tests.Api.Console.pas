@@ -1,4 +1,4 @@
-unit Tests.Api.Console;
+﻿unit Tests.Api.Console;
 
 interface
 
@@ -62,6 +62,7 @@ begin
         THorse.MaxConnections := 10;
         THorse.Listen;
       end).Start;
+    TThread.Sleep(200);
   end;
 end;
 
@@ -75,6 +76,7 @@ begin
         Controllers.Api.Registry;
         THorse.Listen(9000);
       end).Start;
+    TThread.Sleep(200);
   end;
 end;
 
@@ -88,6 +90,7 @@ begin
         Controllers.Api.Registry;
         THorse.Listen('0.0.0.0');
       end).Start;
+    TThread.Sleep(200);
   end;
 end;
 
@@ -107,6 +110,7 @@ begin
           begin
           end);
       end).Start;
+    TThread.Sleep(200);
   end;
 end;
 
@@ -126,6 +130,7 @@ begin
           begin
           end);
       end).Start;
+    TThread.Sleep(200);
   end;
 end;
 
@@ -237,6 +242,7 @@ procedure TApiTest.TearDown;
 begin
   FreeAndNil(FJSONObject);
   FreeAndNil(FJSONArray);
+  THorse.Reset;
 end;
 
 procedure TApiTest.TestCreateApi;
