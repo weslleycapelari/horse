@@ -272,6 +272,7 @@ uses
   Horse.Provider.Config;
 
 type
+  IHorseDependencyResolver = Horse.Core.IHorseDependencyResolver;
   EHorseException = Horse.Exception.EHorseException;
   EHorseCallbackInterrupted = Horse.Exception.Interrupted.EHorseCallbackInterrupted;
   TProc = Horse.Proc.TProc;

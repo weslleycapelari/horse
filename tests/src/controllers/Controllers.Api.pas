@@ -13,8 +13,15 @@ procedure DoDeleteApi(Req: THorseRequest; Res: THorseResponse; Next: TProc);
 
 implementation
 
+var
+  FRegistered: Boolean = False;
+
 procedure Registry;
 begin
+  if FRegistered then
+    Exit;
+  FRegistered := True;
+
   THorse
     .Group
       .Prefix('/Api')
