@@ -47,6 +47,7 @@ packages/bpl/
 *.a
 *.stat
 *.skincfg
+*.delphilsp.json
 
 # Mac
 *.DS_Store
