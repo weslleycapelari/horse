@@ -92,6 +92,9 @@ type
     class var FDependencyResolver: IHorseDependencyResolver;
     class function GetDependencyResolver: IHorseDependencyResolver; static;
     class procedure SetDependencyResolver(const AValue: IHorseDependencyResolver); static;
+    class var FMaxPayloadSize: Int64;
+    class function GetMaxPayloadSize: Int64; static;
+    class procedure SetMaxPayloadSize(const AValue: Int64); static;
 
     class function TrimPath(const APath: string): string;
 
@@ -258,6 +261,10 @@ type
     class function Get(const APath: string; AControllerClass: TClass; const AMethodName: string): THorseCore; overload; static;
 
     class function GetInstance: THorseCore;
+    class property MaxPayloadSize: Int64 read GetMaxPayloadSize write SetMaxPayloadSize;
+
+    class function GetInstance: THorseCore;
+    class procedure Reset; static;
 
     class function Version: string;
 
@@ -290,8 +297,6 @@ uses
   Horse.Core.Group,
 
   Horse.Constants;
-
-
 
 class function THorseCore.GetDependencyResolver: IHorseDependencyResolver;
 begin
@@ -336,6 +341,16 @@ begin
   {$ELSE}
   raise Exception.Create('Class-based routing is not supported under Free Pascal.');
   {$ENDIF}
+end;
+
+class function THorseCore.GetMaxPayloadSize: Int64;
+begin
+  Result := FMaxPayloadSize;
+end;
+
+class procedure THorseCore.SetMaxPayloadSize(const AValue: Int64);
+begin
+  FMaxPayloadSize := AValue;
 end;
 
 class function THorseCore.AddCallback(const ACallback: THorseCallback): THorseCore;
@@ -400,6 +415,16 @@ begin
 
   Result := FDefaultHorse;
 
+end;
+
+class procedure THorseCore.Reset;
+begin
+  if FRoutes <> nil then
+    FreeAndNil(FRoutes);
+  FRoutes := THorseRouterTree.Create;
+  if FCallbacks <> nil then
+    FreeAndNil(FCallbacks);
+  FCallbacks := TList<THorseCallback>.Create;
 end;
 
 
@@ -1139,6 +1164,9 @@ begin
 end;
 
 
+
+initialization
+  THorseCore.FMaxPayloadSize := 10485760;
 
 end.
 

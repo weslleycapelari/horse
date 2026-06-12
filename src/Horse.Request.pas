@@ -204,6 +204,8 @@ uses
 {$ELSE}
   System.Classes,
 {$ENDIF}
+  Horse.Core,
+  Horse.Exception,
   Horse.Core.Param.Header;
 
 { ===========================================================================
@@ -215,13 +217,34 @@ uses
   that need the raw bytes should use Body<TStream>.
   =========================================================================== }
 function THorseRequest.Body: string;
+var
+  LContentLength: Int64;
+  LStrLen: string;
 begin
+  LContentLength := 0;
+  if Assigned(FWebRequest) then
+    LContentLength := FWebRequest.ContentLength
+  else if Assigned(FHeaders) then
+  begin
+    LStrLen := '';
+    if FHeaders.Dictionary.TryGetValue('Content-Length', LStrLen) then
+      LContentLength := StrToInt64Def(LStrLen, 0);
+  end;
+
+  if (LContentLength > 0) and (LContentLength > THorseCore.MaxPayloadSize) then
+    raise EHorseException.New.Status(THTTPStatus.PayloadTooLarge).Error('Payload Too Large');
+
   if not Assigned(FWebRequest) then
   begin
     Result := FBodyString;
-    Exit;
+  end
+  else
+  begin
+    Result := FWebRequest.Content;
   end;
-  Result := FWebRequest.Content;
+
+  if Length(Result) > THorseCore.MaxPayloadSize then
+    raise EHorseException.New.Status(THTTPStatus.PayloadTooLarge).Error('Payload Too Large');
 end;
 
 function THorseRequest.Body(const ABody: TObject): THorseRequest;

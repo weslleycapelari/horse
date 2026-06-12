@@ -17,6 +17,7 @@ uses
   Controllers.Api in 'controllers\Controllers.Api.pas',
   Tests.Commons in 'tests\Tests.Commons.pas',
   Tests.Horse.Core.IoC in 'tests\Tests.Horse.Core.IoC.pas',
+  Tests.Horse.Request in 'tests\Tests.Horse.Request.pas',
   Horse.Commons in '..\..\src\Horse.Commons.pas',
   Horse.Constants in '..\..\src\Horse.Constants.pas',
   Horse.Core.Group.Contract in '..\..\src\Horse.Core.Group.Contract.pas',

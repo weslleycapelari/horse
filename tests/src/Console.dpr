@@ -37,6 +37,7 @@ uses
   Controllers.Api in 'controllers\Controllers.Api.pas',
   Tests.Commons in 'tests\Tests.Commons.pas',
   Tests.Horse.Core.IoC in 'tests\Tests.Horse.Core.IoC.pas',
+  Tests.Horse.Request in 'tests\Tests.Horse.Request.pas',
   Horse.Core.Param in '..\..\src\Horse.Core.Param.pas',
   Horse.Core.Param.Header in '..\..\src\Horse.Core.Param.Header.pas',
   Horse.Provider.IOHandleSSL in '..\..\src\Horse.Provider.IOHandleSSL.pas',
